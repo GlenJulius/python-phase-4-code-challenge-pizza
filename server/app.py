@@ -60,9 +60,7 @@ class RestaurantPizzas(Resource):
             db.session.add(new_rp)
             db.session.commit()
             return new_rp.to_dict(), 201
-        except ValueError as e:
-            return {'errors': [str(e)]}, 400
-        except Exception:
+        except (ValueError, Exception):
             return {'errors': ['validation errors']}, 400
 
 
@@ -78,4 +76,5 @@ def index():
 
 
 if __name__ == "__main__":
-    app.run(port=5555, debug=True)
+    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+    app.run(port=5555, debug=debug_mode)

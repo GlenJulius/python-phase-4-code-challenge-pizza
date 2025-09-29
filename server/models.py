@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
 from sqlalchemy.orm import validates
 from sqlalchemy.ext.associationproxy import association_proxy
+import html
 
 metadata = MetaData(
     naming_convention={
@@ -36,7 +37,7 @@ class Restaurant(db.Model):
         return result
 
     def __repr__(self):
-        return f"<Restaurant {self.name}>"
+        return f"<Restaurant {html.escape(str(self.name))}>"
 
 
 class Pizza(db.Model):
@@ -61,8 +62,7 @@ class Pizza(db.Model):
         return result
 
     def __repr__(self):
-        return f"<Pizza {self.name}, {self.ingredients}>"
-
+        return f"<Pizza {html.escape(str(self.name))}, {html.escape(str(self.ingredients))}>"
 
 class RestaurantPizza(db.Model):
     __tablename__ = "restaurant_pizzas"
@@ -85,9 +85,9 @@ class RestaurantPizza(db.Model):
             'price': self.price,
             'pizza_id': self.pizza_id,
             'restaurant_id': self.restaurant_id,
-            'pizza': self.pizza.to_dict(),
+            'pizza': self.pizza.to_dict(only=('id', 'name', 'ingredients')),
             'restaurant': self.restaurant.to_dict(only=('id', 'name', 'address'))
         }
 
     def __repr__(self):
-        return f"<RestaurantPizza ${self.price}>"
+        return f"<RestaurantPizza price={self.price}>"
